@@ -1,6 +1,11 @@
+#ifndef GAME_CLASS_H
+#define GAME_CLASS_H
 #include <iostream>
 #include <vector>
 #include <map>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include <list>
 #include "IHeuristic.Class.hpp"
 
@@ -22,8 +27,10 @@ public :
     void PrintPlate(vector <vector<int> >);
 
     void PrintInfo();
+    void meilleurJeuListeOuverte(vector<vector<int > > &retour);
 
     void PrintParcours();
+    void setHeuristic(IHeuristic &);
 
     ~Game();
 
@@ -37,3 +44,4 @@ private:
     int nbRows;
     IHeuristic *heuristic;
 };
+#endif

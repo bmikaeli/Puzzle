@@ -1,13 +1,5 @@
 #include "Game.Class.hpp"
 
-
-inline uint distanceManhattan(const Point &p1, const Point &p2) {
-}
-
-inline uint heuristiqueManathan(const Jeu &jeu, const Jeu &etatFini) {
-
-}
-
 void Game::PrintPlate(vector < vector<int> > plate) {
     cout << endl;
     for (int i = 0; i < this->nbLines; ++i) {
@@ -18,13 +10,16 @@ void Game::PrintPlate(vector < vector<int> > plate) {
     }
 }
 
+void Game::setHeuristic(IHeuristic &src) {
+    this->heuristic = &src;
+}
 
 Game::Game() {
     cout << "The Game is now starting" << endl;
 
     this->nbLines = 3;
     this->nbRows = 3;
-    int lignes[this->nbLines][this->nbRows] = {
+    int lignes[3][3] = {
             {6, 3, 1},
             {8, 0, 2},
             {7, 4, 5}
@@ -46,13 +41,6 @@ Game::Game() {
     }
     this->PrintPlate(this->PlateBegin);
     this->PrintPlate(this->PlateEnd);
-
-    Node node;
-    node.F = 0;
-    node.G = 0;
-    node.H = this->heuristic->Calculate(this->PlateBegin, this->PlateEnd);
-    node.parent = this->PlateBegin;
-    openList[this->PlateBegin] = node;
 }
 
 Game::~Game() {
@@ -66,7 +54,111 @@ void Game::PrintInfo() {
 void Game::PrintParcours() {
 }
 
+void Game::meilleurJeuListeOuverte(vector<vector<int > > &retour) {
+    retour = this->openList.begin()->first;
+    int plusBasCout = openList.begin()->second.F;
+
+    for (map<vector<vector<int> >, Node>::iterator it = ++openList.begin(); it != openList.end(); ++it) {
+        if (it->second.F < plusBasCout) {
+            retour = it->first;
+            plusBasCout = it->second.F;
+        }
+    }
+}
 void Game::Search() {
 
+    Node node;
+    node.F = 0;
+    node.G = 0;
+    node.H = this->heuristic->Calculate(this->PlateBegin, this->PlateEnd);
+    node.parent = this->PlateBegin;
+    this->openList[this->PlateBegin] = node;
 
+    vector<vector<int> > jeu;
+
+
+    Node currNode;
+    bool okPourCeTour;
+    int nombre_tentative = 0;
+    int numero_case_vide = 0;
+    while (!this->openList.empty()) {
+
+        cout << "iteration : "  << i << endl;
+
+        meilleurJeuListeOuverte(jeu);
+
+        currNode = openList[jeu];
+        this->closedlist[jeu] = currNode;
+//        this->openList.erase(jeu);
+
+        if (jeu == this->PlateEnd) {
+            break;
+        }
+
+        okPourCeTour = false;
+        for (int i = 0; i < 3 && !okPourCeTour; ++i) {
+            for (int j = 0; j < 3 && !okPourCeTour; ++j) {
+
+                // on cherche la case vide
+                if (jeu[i][j] != numero_case_vide) {
+                    continue;
+                }
+
+                // on a notre case vide
+                okPourCeTour = true;
+                ++nombre_tentative;
+
+                if (j > 0) {
+                    vector<vector<int> >  nJeu = jeu;
+                    nJeu[i][j] = jeu[i][j - 1];
+                    nJeu[i][j - 1] = jeu[i][j];
+                    Node nNoeud;
+                    nNoeud.G = node.G + 1;
+                    nNoeud.H = this->heuristic->Calculate((nJeu, this->PlateEnd));
+                    nNoeud.F = nNoeud.G + nNoeud.H;
+                    nNoeud.parent = jeu;
+                    ajouterDansOpenList(nJeu, nNoeud, node);
+                }
+
+                if (j < nombre_de_colonnes - 1) {
+                    vector<vector<int> >  nJeu = jeu;
+                    nJeu[i][j] = jeu[i][j + 1];
+                    nJeu[i][j + 1] = jeu[i][j];
+                    Node nNoeud;
+                    nNoeud.G = node.G + 1;
+                    nNoeud.H = this->heuristic->Calculate(nJeu, this->PlateEnd);
+                    nNoeud.F = nNoeud.G + nNoeud.H;
+                    nNoeud.parent = jeu;
+                    ajouterDansOpenList(nJeu, nNoeud, node);
+                }
+
+                if (i > 0) {
+                    vector<vector<int> >  nJeu = jeu;
+                    nJeu[i][j] = jeu[i - 1][j];
+                    nJeu[i - 1][j] = jeu[i][j];
+                    Node nNoeud;
+                    nNoeud.G = node.G + 1;
+                    nNoeud.H = this->heuristic->Calculate((nJeu, this->PlateEnd);
+                    nNoeud.F = nNoeud.G + nNoeud.H;
+                    nNoeud.parent = jeu;
+                    ajouterDansOpenList(nJeu, nNoeud, node);
+                }
+
+                if (i < nombre_de_lignes - 1) {
+                    vector<vector<int> > nJeu = jeu;
+                    nJeu[i][j] = jeu[i + 1][j];
+                    nJeu[i + 1][j] = jeu[i][j];
+                    Node nNoeud;
+                    nNoeud.G = node.G + 1;
+                    nNoeud.H = this->heuristic->Calculate((nJeu, this->PlateEnd);
+                    nNoeud.F = nNoeud.G + nNoeud.H;
+                    nNoeud.parent = jeu;
+                    ajouterDansOpenList(nJeu, nNoeud, node);
+                }
+
+            }
+        }
+
+    i++;
+    }
 }

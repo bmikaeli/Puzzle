@@ -1,24 +1,26 @@
 #include "ManhattanHeuristic.Class.hpp"
 
-ManhattanHeuristic::~ManhattanHeuristic() {
+ManhattanHeuristic::~ManhattanHeuristic(void) {
 }
 
-ManhattanHeuristic::ManhattanHeuristic() {
+ManhattanHeuristic::ManhattanHeuristic(void) {
+
 }
 
-inline Point localiserPositionFinale(uchar valeur, const Jeu &etatFini) {
-    for (uchar i = 0; i < nombre_de_lignes; ++i) {
-        for (uchar j = 0; j < nombre_de_colonnes; ++j) {
-            if (etatFini[i][j] == valeur) {
-                return Point(i, j);
+pair<int, int> localiserPositionFinale(int value, vector <vector<int> > GameAtEnd) {
+
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (GameAtEnd[i][j] == value) {
+                return pair<int, int>(i, j);
             }
         }
     }
-    return Point(0, 0);
+    return pair<int, int>(0, 0);
 }
 
-int ManhattanHeuristic::Algo(int x1, int y1, int x2, int y2) {
-    return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+int ManhattanHeuristic::Algo(pair<int, int> &p1, pair<int, int> &p2) {
+    return (p1.first - p2.first) * (p1.first - p2.first) + (p1.second - p2.second) * (p1.second - p2.second);
 }
 
 int ManhattanHeuristic::Calculate(vector < vector<int> > start, vector < vector<int> > end) {
@@ -26,7 +28,11 @@ int ManhattanHeuristic::Calculate(vector < vector<int> > start, vector < vector<
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
-            k += this->algo(i, j, localiserPositionFinale(jeu[i][j], etatFini));
+
+            pair<int, int> finalePos = localiserPositionFinale(start[i][j], end);
+            pair<int, int> currPos = pair<int, int>(i, j);
+
+            k += this->Algo(currPos, finalePos);
         }
     }
     return k;
