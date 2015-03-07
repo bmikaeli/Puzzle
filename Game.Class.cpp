@@ -81,10 +81,11 @@ void Game::Search() {
     bool okPourCeTour;
     int nombre_tentative = 0;
     int numero_case_vide = 0;
+    int z = 0;
     while (!this->openList.empty()) {
 
-        cout << "iteration : "  << i << endl;
-
+        cout << "iteration : "  << z << endl;
+z++;
         meilleurJeuListeOuverte(jeu);
 
         currNode = openList[jeu];
@@ -114,13 +115,13 @@ void Game::Search() {
                     nJeu[i][j - 1] = jeu[i][j];
                     Node nNoeud;
                     nNoeud.G = node.G + 1;
-                    nNoeud.H = this->heuristic->Calculate((nJeu, this->PlateEnd));
+                    nNoeud.H = this->heuristic->Calculate(nJeu, this->PlateEnd);
                     nNoeud.F = nNoeud.G + nNoeud.H;
                     nNoeud.parent = jeu;
                     ajouterDansOpenList(nJeu, nNoeud, node);
                 }
 
-                if (j < nombre_de_colonnes - 1) {
+                if (j < 3 - 1) {
                     vector<vector<int> >  nJeu = jeu;
                     nJeu[i][j] = jeu[i][j + 1];
                     nJeu[i][j + 1] = jeu[i][j];
@@ -138,19 +139,19 @@ void Game::Search() {
                     nJeu[i - 1][j] = jeu[i][j];
                     Node nNoeud;
                     nNoeud.G = node.G + 1;
-                    nNoeud.H = this->heuristic->Calculate((nJeu, this->PlateEnd);
+                    nNoeud.H = this->heuristic->Calculate(nJeu, this->PlateEnd);
                     nNoeud.F = nNoeud.G + nNoeud.H;
                     nNoeud.parent = jeu;
                     ajouterDansOpenList(nJeu, nNoeud, node);
                 }
 
-                if (i < nombre_de_lignes - 1) {
+                if (i < 3 - 1) {
                     vector<vector<int> > nJeu = jeu;
                     nJeu[i][j] = jeu[i + 1][j];
                     nJeu[i + 1][j] = jeu[i][j];
                     Node nNoeud;
                     nNoeud.G = node.G + 1;
-                    nNoeud.H = this->heuristic->Calculate((nJeu, this->PlateEnd);
+                    nNoeud.H = this->heuristic->Calculate(nJeu, this->PlateEnd);
                     nNoeud.F = nNoeud.G + nNoeud.H;
                     nNoeud.parent = jeu;
                     ajouterDansOpenList(nJeu, nNoeud, node);
@@ -158,7 +159,5 @@ void Game::Search() {
 
             }
         }
-
-    i++;
     }
 }
