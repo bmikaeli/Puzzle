@@ -1,6 +1,7 @@
 #ifndef GAME_CLASS_H
 #define GAME_CLASS_H
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <map>
 #include <fstream>
@@ -28,7 +29,7 @@ public :
 
     void PrintInfo();
     void meilleurJeuListeOuverte(vector<vector<int > > &retour);
-
+    void ajouterDansOpenList(const vector<vector<int> > &jeu, const Node &nouveauNoeud, const Node &noeudRemplace);
     void PrintParcours();
     void setHeuristic(IHeuristic &);
 
