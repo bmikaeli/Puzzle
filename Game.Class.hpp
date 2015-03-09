@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <list>
+#include <stdlib.h>
 #include "IHeuristic.Class.hpp"
 
 using namespace std;
@@ -15,34 +16,36 @@ using namespace std;
 class Game {
 public :
     struct Node {
-        int F; // F = G + H
-        int G; // the movement cost from start to here
-        int H; // the estimated movement cost to move from here to the end (Calculed by the heuristic)
-        vector <vector<int> > parent;
+        short F; // F = G + H
+        short G; // the movement cost from start to here
+        short H; // the estimated movement cost to move from here to the end (Calculed by the heuristic)
+        vector <vector<short> > parent;
     };
 
     Game();
 
     void Search();
-
-    void PrintPlate(vector <vector<int> >);
-
-    void PrintInfo();
-    void meilleurJeuListeOuverte(vector<vector<int > > &retour);
-    void ajouterDansOpenList(const vector<vector<int> > &jeu, const Node &nouveauNoeud, const Node &noeudRemplace);
-    void PrintParcours();
+    void PrshortPlate(vector <vector<short> >);
+    pair<short, short>findMovingPart(vector<vector<short> >);
+    void PrshortInfo();
+    void findBestMoveInOpenList(vector<vector<short > > &retour);
+    void AddToOpenList(const vector<vector<short> > &jeu, const Node &nouveauNoeud, const Node &noeudRemplace);
+    void PrshortParcours();
+    vector<vector<short> > getStartMap();
+    vector<vector<short> > getEndMap();
     void setHeuristic(IHeuristic &);
-
+    void storeResolvedMap();
+    void Parse(string line);
     ~Game();
 
 private:
-    vector <vector<int> > Plate;
-    vector <vector<int> > PlateEnd;
-    vector <vector<int> > PlateBegin;
-    map <vector<vector<int> >, Node> openList;
-    map <vector<vector<int> >, Node> closedlist;
-    int nbLines;
-    int nbRows;
+    vector <vector<short> > PlateEnd;
+    vector <vector<short> > PlateBegin;
+    map <vector<vector<short> >, Node> openList;
+    map <vector<vector<short> >, Node> closedlist;
+    short nbLines;
+    bool resolved;
+    short nbRows;
     IHeuristic *heuristic;
 };
 #endif

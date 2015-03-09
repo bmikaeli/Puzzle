@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <cmath>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -12,9 +13,9 @@ using namespace std;
 
 class IHeuristic {
 public:
-    virtual int Algo(pair<int, int> &p1, pair<int, int> &p2) = 0;
+    virtual short Algo(pair<short, short> &p1, pair<short, short> &p2) = 0;
 
-    virtual int Calculate(vector <vector<int> >, vector <vector<int> >) = 0;
+    virtual short Calculate(vector <vector<short> >, vector <vector<short> >) = 0;
 
     virtual ~IHeuristic(){};
 };
