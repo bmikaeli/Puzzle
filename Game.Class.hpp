@@ -29,7 +29,7 @@ public :
     pair<short, short>findMovingPart(vector<vector<short> >);
     void PrshortInfo();
     void findBestMoveInOpenList(vector<vector<short > > &retour);
-    void AddToOpenList(const vector<vector<short> > &jeu, const Node &nouveauNoeud, const Node &noeudRemplace);
+    void AddToOpenList(const vector<vector<short> > &jeu, const Node &nouveauNoeud);
     void PrshortParcours();
     vector<vector<short> > getStartMap();
     vector<vector<short> > getEndMap();

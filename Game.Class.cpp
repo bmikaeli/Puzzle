@@ -90,17 +90,17 @@ void Game::findBestMoveInOpenList(vector < vector<short> > &retour) {
     }
 }
 
-void Game::AddToOpenList(const vector <vector<short>> &jeu, const Node &nouveauNoeud, const Node &noeudRemplace) {
-    if(jeu == this->PlateEnd)
-    {
+void Game::AddToOpenList(const vector <vector<short>> &jeu, const Node &nouveauNoeud) {
+    if (jeu == this->PlateEnd) {
         this->resolved = true;
     }
-    if (this->openList.find(jeu) == this->openList.end()) {
+    auto old = this->openList.find(jeu);
+    if (old == this->openList.end()) {
         this->openList[jeu] = nouveauNoeud;
     }
     else {
-        if (nouveauNoeud.F < noeudRemplace.F) {
-            this->openList[jeu] = nouveauNoeud;
+        if (nouveauNoeud.G < (*old).second.G) {
+            (*old).second.parent = nouveauNoeud.parent;
         }
     }
 }
@@ -134,12 +134,12 @@ void Game::Search() {
     int nb_Try = 0;
     Node noeud;
     vector <vector<short>> jeu = this->PlateBegin;
-    bool alreadyclose = true;
+    bool notalreadyclose = true;
 
-    while (!this->openList.empty() && !success) {
+    while (!this->openList.empty()) {
 
         findBestMoveInOpenList(jeu);
-        if (jeu == this->PlateEnd || this->resolved == true) {
+        if (jeu == this->PlateEnd || this->resolved) {
             success = true;
             break;
         }
@@ -148,79 +148,75 @@ void Game::Search() {
             this->closedlist[jeu] = noeud;
             this->openList.erase(jeu);
         }
-            pair<int, int> MovingPart = this->findMovingPart(jeu);
+        pair<int, int> MovingPart = this->findMovingPart(jeu);
 
-            int i = MovingPart.first;
-            int j = MovingPart.second;
-            vector < pair < vector < vector<short> > , Node > > tmpFour;
-//            this->PrshortPlate(jeu);
-//            cout << "heuristic =  "<< this->heuristic->Calculate(jeu, this->PlateEnd);
+        int i = MovingPart.first;
+        int j = MovingPart.second;
+        vector < pair < vector < vector<short> > , Node > > tmpFour;
 
-//            cout << endl;
+        nb_Try++;
+        if (j > 0) {
+            vector <vector<short>> tmpJeu = jeu;
+            Node tmpNode;
 
-            nb_Try++;
-            if (j > 0) {
-                vector <vector<short>> tmpJeu = jeu;
-                Node tmpNode;
-
-                tmpJeu[i][j] = jeu[i][j - 1];
-                tmpJeu[i][j - 1] = jeu[i][j];
-                tmpNode.G = this->heuristic->Calculate(tmpJeu, this->PlateBegin);
-                tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
-                tmpNode.F = tmpNode.G + tmpNode.H;
-                tmpNode.parent = jeu;
-                alreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end() ? false : true;
-                if (alreadyclose == false) {
-                    AddToOpenList(tmpJeu, tmpNode, noeud);
-                }
+            tmpJeu[i][j] = jeu[i][j - 1];
+            tmpJeu[i][j - 1] = jeu[i][j];
+            tmpNode.G++;
+            tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
+            tmpNode.F = tmpNode.G + tmpNode.H;
+            tmpNode.parent = jeu;
+            notalreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end();
+            if (notalreadyclose) {
+                AddToOpenList(tmpJeu, tmpNode);
             }
+        }
 
-            if (j < this->nbRows - 1) {
-                vector <vector<short>> tmpJeu = jeu;
-                Node tmpNode;
+        if (j < this->nbRows - 1) {
+            vector <vector<short>> tmpJeu = jeu;
+            Node tmpNode;
 
-                tmpJeu[i][j] = jeu[i][j + 1];
-                tmpJeu[i][j + 1] = jeu[i][j];
-                tmpNode.G = this->heuristic->Calculate(tmpJeu, this->PlateBegin);
-                tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
-                tmpNode.F = tmpNode.G + tmpNode.H;
-                tmpNode.parent = jeu;
-                alreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end() ? false : true;
-                if (alreadyclose == false) {
-                    AddToOpenList(tmpJeu, tmpNode, noeud);
-                }
+            tmpJeu[i][j] = jeu[i][j + 1];
+            tmpJeu[i][j + 1] = jeu[i][j];
+            tmpNode.G++;
+            tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
+            tmpNode.F = tmpNode.G + tmpNode.H;
+            tmpNode.parent = jeu;
+            notalreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end();
+            if (notalreadyclose) {
+                AddToOpenList(tmpJeu, tmpNode);
             }
+        }
 
-            if (i > 0) {
-                vector <vector<short>> tmpJeu = jeu;
-                Node tmpNode;
+        if (i > 0) {
+            vector <vector<short>> tmpJeu = jeu;
+            Node tmpNode;
 
-                tmpJeu[i][j] = jeu[i - 1][j];
-                tmpJeu[i - 1][j] = jeu[i][j];
-                tmpNode.G = this->heuristic->Calculate(tmpJeu, this->PlateBegin);
-                tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
-                tmpNode.F = tmpNode.G + tmpNode.H;
-                tmpNode.parent = jeu;
-                alreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end() ? false : true;
-                if (alreadyclose == false) {
-                    AddToOpenList(tmpJeu, tmpNode, noeud);
-                }
+            tmpJeu[i][j] = jeu[i - 1][j];
+            tmpJeu[i - 1][j] = jeu[i][j];
+            tmpNode.G++;
+            tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
+            tmpNode.F = tmpNode.G + tmpNode.H;
+            tmpNode.parent = jeu;
+            notalreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end();
+            if (notalreadyclose) {
+                AddToOpenList(tmpJeu, tmpNode);
             }
+        }
 
-            if (i < this->nbLines - 1) {
-                vector <vector<short>> tmpJeu = jeu;
-                Node tmpNode;
-                tmpJeu[i][j] = jeu[i + 1][j];
-                tmpJeu[i + 1][j] = jeu[i][j];
-                tmpNode.G = this->heuristic->Calculate(tmpJeu, this->PlateBegin);
-                tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
-                tmpNode.F = tmpNode.G + tmpNode.H;
-                tmpNode.parent = jeu;
-                alreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end() ? false : true;
-                if (alreadyclose == false) {
-                    AddToOpenList(tmpJeu, tmpNode, noeud);
-                }
+        if (i < this->nbLines - 1) {
+            vector <vector<short>> tmpJeu = jeu;
+            Node tmpNode;
+            tmpJeu[i][j] = jeu[i + 1][j];
+            tmpJeu[i + 1][j] = jeu[i][j];
+            tmpNode.G++;
+            tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
+            tmpNode.F = tmpNode.G + tmpNode.H;
+            tmpNode.parent = jeu;
+            notalreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end();
+            if (notalreadyclose) {
+                AddToOpenList(tmpJeu, tmpNode);
             }
+        }
     }
 
     if (jeu != this->PlateEnd) {
@@ -249,8 +245,9 @@ void Game::Search() {
 
 //
 //  map <vector<vector<short> >, Node> it;
-   cout << "Resolution Path :" << endl;
+    cout << "Resolution Path :" << endl;
     cout << "taille de la closelist : " << this->closedlist.size() << endl;
+
     while (noeud.parent != this->PlateBegin) {
         this->PrshortPlate(jeu);
         cout << endl;
