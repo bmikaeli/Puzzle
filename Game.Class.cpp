@@ -83,25 +83,50 @@ void Game::findBestMoveInOpenList(vector < vector<short> > &retour) {
     int smallestF = 999999999;
 
     for (auto item : this->openList) {
-        if (item.second.F < smallestF) {
+//        cout << "OpenList Heuristic : " << item.second.F << endl;
+        if(item.first == this->PlateEnd)
+        {
+            cout << "End move found !!!!!!!!!" << endl;
+            retour = item.first;
+            return ;
+        }
+        else if (item.second.F < smallestF) {
             retour = item.first;
             smallestF = item.second.F;
         }
     }
+//    cout << "choosing the heuristic of "<< smallestF << endl;
 }
 
 void Game::AddToOpenList(const vector <vector<short>> &jeu, const Node &nouveauNoeud) {
-    if (jeu == this->PlateEnd) {
-        this->resolved = true;
-    }
-    auto old = this->openList.find(jeu);
-    if (old == this->openList.end()) {
-        this->openList[jeu] = nouveauNoeud;
-    }
-    else {
-        if (nouveauNoeud.G < (*old).second.G) {
-            (*old).second.parent = nouveauNoeud.parent;
+    auto notalreadyclose = this->closedlist.find(jeu);
+
+    if (notalreadyclose == this->closedlist.end())
+    {
+        auto old = this->openList.find(jeu);
+
+        if (old == this->openList.end()) {
+//            cout << "create a new node of heuristic :  " << nouveauNoeud.F << endl;
+            this->openList[jeu] = nouveauNoeud;
         }
+        else {
+
+            cout << "new : " << nouveauNoeud.F << "  old " << this->openList[jeu].F << endl;
+
+            if (nouveauNoeud.G < this->openList[jeu].G) {
+                cout << "update openlist with better G path" << endl;
+                (*old).second.parent = nouveauNoeud.parent;
+            }
+            else
+            {
+
+                cout << "already in openlist with a bad  G path" << endl;
+            }
+        }
+    }
+    else
+    {
+//        cout << "already in the closed list" << endl;
     }
 }
 
@@ -134,7 +159,6 @@ void Game::Search() {
     int nb_Try = 0;
     Node noeud;
     vector <vector<short>> jeu = this->PlateBegin;
-    bool notalreadyclose = true;
 
     while (!this->openList.empty()) {
 
@@ -148,6 +172,16 @@ void Game::Search() {
             this->closedlist[jeu] = noeud;
             this->openList.erase(jeu);
         }
+//        cout << endl << "//////////////" <<endl;
+//        this->PrshortPlate(jeu);
+//        this->PrshortPlate(jeu);
+//        cout << endl;
+
+        int heuristic = this->heuristic->Calculate(jeu, this->PlateEnd);
+        int heuristic2 = this->heuristic->Calculate(jeu, this->PlateBegin);
+        cout << "Heuristique : " << heuristic + heuristic2 << endl;
+
+
         pair<int, int> MovingPart = this->findMovingPart(jeu);
 
         int i = MovingPart.first;
@@ -161,14 +195,12 @@ void Game::Search() {
 
             tmpJeu[i][j] = jeu[i][j - 1];
             tmpJeu[i][j - 1] = jeu[i][j];
-            tmpNode.G++;
+            tmpNode.G = this->heuristic->Calculate(tmpJeu, this->PlateBegin);
             tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
             tmpNode.F = tmpNode.G + tmpNode.H;
+//            cout << "gauche : " << tmpNode.F << endl;
             tmpNode.parent = jeu;
-            notalreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end();
-            if (notalreadyclose) {
-                AddToOpenList(tmpJeu, tmpNode);
-            }
+            AddToOpenList(tmpJeu, tmpNode);
         }
 
         if (j < this->nbRows - 1) {
@@ -177,14 +209,13 @@ void Game::Search() {
 
             tmpJeu[i][j] = jeu[i][j + 1];
             tmpJeu[i][j + 1] = jeu[i][j];
-            tmpNode.G++;
+            tmpNode.G = this->heuristic->Calculate(tmpJeu, this->PlateBegin);
+
             tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
             tmpNode.F = tmpNode.G + tmpNode.H;
+//            cout << "droite : " << tmpNode.F << endl;
             tmpNode.parent = jeu;
-            notalreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end();
-            if (notalreadyclose) {
-                AddToOpenList(tmpJeu, tmpNode);
-            }
+            AddToOpenList(tmpJeu, tmpNode);
         }
 
         if (i > 0) {
@@ -193,29 +224,29 @@ void Game::Search() {
 
             tmpJeu[i][j] = jeu[i - 1][j];
             tmpJeu[i - 1][j] = jeu[i][j];
-            tmpNode.G++;
+            tmpNode.G = this->heuristic->Calculate(tmpJeu, this->PlateBegin);
+
             tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
+
             tmpNode.F = tmpNode.G + tmpNode.H;
+
+//            cout << "haut : " << tmpNode.F << endl;
             tmpNode.parent = jeu;
-            notalreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end();
-            if (notalreadyclose) {
-                AddToOpenList(tmpJeu, tmpNode);
-            }
-        }
+            AddToOpenList(tmpJeu, tmpNode);
+    }
 
         if (i < this->nbLines - 1) {
             vector <vector<short>> tmpJeu = jeu;
             Node tmpNode;
             tmpJeu[i][j] = jeu[i + 1][j];
             tmpJeu[i + 1][j] = jeu[i][j];
-            tmpNode.G++;
+            tmpNode.G = this->heuristic->Calculate(tmpJeu, this->PlateBegin);
             tmpNode.H = this->heuristic->Calculate(tmpJeu, this->PlateEnd);
+//
             tmpNode.F = tmpNode.G + tmpNode.H;
+//            cout << "bas : " << tmpNode.F << endl;
             tmpNode.parent = jeu;
-            notalreadyclose = this->closedlist.find(tmpJeu) == this->closedlist.end();
-            if (notalreadyclose) {
                 AddToOpenList(tmpJeu, tmpNode);
-            }
         }
     }
 
@@ -245,21 +276,24 @@ void Game::Search() {
 
 //
 //  map <vector<vector<short> >, Node> it;
-    cout << "Resolution Path :" << endl;
-    cout << "taille de la closelist : " << this->closedlist.size() << endl;
-
-    while (noeud.parent != this->PlateBegin) {
-        this->PrshortPlate(jeu);
-        cout << endl;
-        jeu = noeud.parent;
-        noeud = this->closedlist[jeu];
-    }
+//    cout << "Resolution Path :" << endl;
+//    cout << "taille de la closelist : " << this->closedlist.size() << endl;
+//
+//    noeud = this->closedlist[jeu];
+//    while (noeud.parent != this->PlateBegin) {
+//        this->PrshortPlate(noeud.parent);
+//        cout << endl;
+//        jeu = noeud.parent;
+//        noeud = this->closedlist[jeu];
+//    }
+//   cout << "Closedlist : " << endl;
 //    for(auto elem : this->closedlist)
 //    {
 //        this->PrshortPlate(elem.first);
 //        cout << endl;
 //    }
-//    std::cout << "solution en " << vj.size() << " coups :" << std::endl;
+//
+//  std::cout << "solution en " << vj.size() << " coups :" << std::endl;
 
 
 }
