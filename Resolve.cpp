@@ -6,14 +6,17 @@
 //   By: mbar <mbar@student.42.fr>                  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2015/03/09 16:07:47 by mbar              #+#    #+#             //
-//   Updated: 2015/03/11 11:41:58 by mbar             ###   ########.fr       //
+//   Updated: 2015/03/11 13:07:34 by mbar             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
 #include "Resolve.hpp"
 
-Resolve::Resolve(std::vector<size_t> initial_map, size_t size) : initial_map(initial_map), size(size)
+Resolve::Resolve(std::vector<size_t> initial_map, size_t size) : initial_map(initial_map), size(size), opt_aff(true), opt_heu(0)
 {
+	this->heuristics[0] = &Resolve::heuristic_p;
+	this->heuristics[1] = &Resolve::heuristic_w;
+	this->heuristics[2] = &Resolve::heuristic_e;
 	return ;
 }
 
@@ -34,6 +37,11 @@ Resolve							&Resolve::operator=(Resolve const &rhs)
 	{
 	}
 	return *this;
+}
+
+void							Resolve::setOpt_aff(bool b)
+{
+	this->opt_aff = b;
 }
 
 bool							Resolve::is_final(t_node current)
@@ -62,7 +70,7 @@ void							Resolve::add_to_opened(std::vector<t_node> &opened, t_node current, s
 		temp.cur_map[i] = temp.cur_map[i + 1];
 		temp.cur_map[i + 1] = 0;
 		temp.g = g;
-		temp.h = this->sum_heuristic_m(temp.cur_map);
+		temp.h = this->sum_heuristic(temp.cur_map);
 		temp.f = temp.g + temp.h;
 		temp.i_prev = closed[current.h % MAX].size() - 1;
 		temp.j_prev = current.h % MAX;
@@ -76,7 +84,7 @@ void							Resolve::add_to_opened(std::vector<t_node> &opened, t_node current, s
 		temp.cur_map[i] = temp.cur_map[i - 1];
 		temp.cur_map[i - 1] = 0;
 		temp.g = g;
-		temp.h = this->sum_heuristic_m(temp.cur_map);
+		temp.h = this->sum_heuristic(temp.cur_map);
 		temp.f = temp.g + temp.h;
 		temp.i_prev = closed[current.h % MAX].size() - 1;
 		temp.j_prev = current.h % MAX;
@@ -90,7 +98,7 @@ void							Resolve::add_to_opened(std::vector<t_node> &opened, t_node current, s
 		temp.cur_map[i] = temp.cur_map[i + this->size];
 		temp.cur_map[i + this->size] = 0;
 		temp.g = g;
-		temp.h = this->sum_heuristic_m(temp.cur_map);
+		temp.h = this->sum_heuristic(temp.cur_map);
 		temp.f = temp.g + temp.h;
 		temp.i_prev = closed[current.h % MAX].size() - 1;
 		temp.j_prev = current.h % MAX;
@@ -104,7 +112,7 @@ void							Resolve::add_to_opened(std::vector<t_node> &opened, t_node current, s
 		temp.cur_map[i] = temp.cur_map[i - this->size];
 		temp.cur_map[i - this->size] = 0;
 		temp.g = g;
-		temp.h = this->sum_heuristic_m(temp.cur_map);
+		temp.h = this->sum_heuristic(temp.cur_map);
 		temp.f = temp.g + temp.h;
 		temp.i_prev = closed[current.h % MAX].size() - 1;
 		temp.j_prev = current.h % MAX;
@@ -185,7 +193,7 @@ void									Resolve::launch(void)
 			add_to_opened(opened, current, closed, g);
 		}
 	}
-	if (succes)
+	if (succes && this->opt_aff)
 	{
 		this->aff_sequence(current, closed);
 		this->aff_nb_moves(current, closed);
@@ -196,13 +204,11 @@ void									Resolve::launch(void)
 
 void							Resolve::aff_nb_max(size_t n)
 {
-//	std::cout << "Maximum number of states represented: " << n << std::endl;
 	printf("%-38s %5ld\n", "Maximum number of states represented:", n);
 }
 
 void							Resolve::aff_nb_opened(size_t n)
 {
-//	std::cout << "Number of states selected: " << n << std::endl;
 	printf("%-38s %5ld\n", "Number of states selected:", n);
 }
 
@@ -218,7 +224,6 @@ void							Resolve::aff_nb_moves(t_node current, std::map<int, std::vector<t_nod
 		i++;
 	}
 	std::cout << std::endl;
-//	std::cout << "Number of moves: " << i << std::endl;
 	printf("%-38s %5ld\n", "Number of moves:", i);
 }
 
@@ -245,45 +250,21 @@ void							Resolve::aff_map(std::vector<size_t> map)
 		i++;
 	}
 }
-void Resolve::addHeuristic(IHeuristic heuristic) {
-	(void) heuristic;
-	std::cout << this->heuristic_table.size() << std::endl;
-	this->heuristic_table.push_back(heuristic);
-}
-size_t							Resolve::sum_heuristic_m(std::vector<size_t> map)
+
+size_t                          Resolve::sum_heuristic(std::vector<size_t> map)
 {
-	size_t						r = 0;
-	size_t						i = 0;
+    size_t                      r = 0;
+    size_t                      i = 0;
 
-	if(this->heuristic_table.size() == 0)
-	{
-		std::cout << "There is no heuristic function loaded. Abort." << std::endl;
-		exit(-1);
-	}
-//	std::vector< IHeuristic >::iterator it;
-//	std::vector< IHeuristic >::iterator ite = this->heuristic_table.end();
-
-	std::cout << this->heuristic_table.size() <<std::endl;
-	while (i < map.size() - 1)
-	{
-//		for(it = this->heuristic_table.begin(); it != ite; it++)
-//		{
-//			std::cout << "heuristic" << std::endl;
-
-
-		r +=  this->heuristic_table[0]->Calculate(i + 1, i, map, this->size);
-		std::cout << r << std::endl;
-//		std::cout << this->heuristic_table[0] << std::endl;
-		exit(1);
-//			r +=  heuristic_m(i + 1, i, map);
-//		}
-		i++;
-	}
-	return (r);
+    while (i < map.size() - 1)
+    {
+        r += (this->*heuristics[this->opt_heu])(i + 1, i, map);
+        i++;
+    }
+    return (r);
 }
 
-
-size_t							Resolve::heuristic_m(size_t n, size_t pos, std::vector<size_t> map)
+size_t							Resolve::heuristic_p(size_t n, size_t pos, std::vector<size_t> map)
 {
 	size_t						p = 0;
 	size_t						i = 0;
@@ -299,6 +280,25 @@ size_t							Resolve::heuristic_m(size_t n, size_t pos, std::vector<size_t> map)
 	else
 		p += (pos / this->size) - (i / this->size);
 	return (p);
+}
+
+size_t							Resolve::heuristic_w(size_t n, size_t pos, std::vector<size_t> map)
+{
+	if (map[pos] != n)
+		return (1);
+	return (0);
+}
+
+size_t							Resolve::heuristic_e(size_t n, size_t pos, std::vector<size_t> map)
+{
+	size_t						i = 0;
+	size_t						t;
+
+	while (map[i] != n)
+		i++;
+	t = sqrt(pow((i % this->size + 1) - (i / this->size + 1), 2) + pow((pos % this->size + 1) - (pos / this->size + 1), 2));
+//	std::cout << t << std::endl;
+	return (t);
 }
 
 bool							Resolve::is_solvable(void)
@@ -333,7 +333,7 @@ bool							Resolve::is_solvable(void)
 		}
 		i++;
 	}
-	if ((this->heuristic_m(0, this->initial_map.size() - 1, this->initial_map) % 2) != (p % 2))
+	if ((this->heuristic_p(0, this->initial_map.size() - 1, this->initial_map) % 2) != (p % 2))
 		return (false);
 	return (true);
 }

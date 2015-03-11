@@ -6,7 +6,7 @@
 #    By: mbar <mbar@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/18 12:22:51 by mbar              #+#    #+#              #
-#    Updated: 2015/03/09 16:23:03 by mbar             ###   ########.fr        #
+#    Updated: 2015/03/11 13:08:30 by mbar             ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,7 +14,6 @@ NAME = n-puzzle
 
 SRC = main.cpp \
 		Parser.cpp \
-		ManhattanHeuristic.Class.cpp \
 		Resolve.cpp
 
 CFLAGS = -Wall -Wextra -Werror -std=c++11

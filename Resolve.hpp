@@ -6,7 +6,7 @@
 //   By: mbar <mbar@student.42.fr>                  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2015/03/09 16:06:45 by mbar              #+#    #+#             //
-//   Updated: 2015/03/11 10:18:25 by mbar             ###   ########.fr       //
+//   Updated: 2015/03/11 13:06:43 by mbar             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -17,8 +17,7 @@
 # include <vector>
 # include <map>
 # include <algorithm>
-# include <unistd.h>
-# include "IHeuristic.Class.hpp"
+# include <cmath>
 
 # define MAX	500
 
@@ -36,17 +35,22 @@ class Resolve
 {
 public:
 	Resolve(std::vector<size_t> initial_map, size_t size);
-	void addHeuristic(IHeuristic);
 	virtual ~Resolve(void);
 
 	void						launch(void);
+	void						setOpt_aff(bool b);
 private:
 	Resolve(Resolve const &src);
 	Resolve						&operator=(Resolve const &rhs);
 
-	std::vector<IHeuristic>     heuristic_table;
-	size_t						heuristic_m(size_t n, size_t pos, std::vector<size_t> map);
-	size_t						sum_heuristic_m(std::vector<size_t> map);
+	typedef size_t (Resolve::*t_heuristic)(size_t, size_t, std::vector<size_t>);
+	t_heuristic					heuristics[3];
+
+	size_t						heuristic_p(size_t n, size_t pos, std::vector<size_t> map);
+	size_t						heuristic_w(size_t n, size_t pos, std::vector<size_t> map);
+	size_t						heuristic_e(size_t n, size_t pos, std::vector<size_t> map);
+
+	size_t						sum_heuristic(std::vector<size_t> map);
 	bool						is_solvable(void);
 	bool						is_final(t_node current);
 	bool						is_exist(std::vector<t_node> list, t_node item);
@@ -60,6 +64,8 @@ private:
 
 	std::vector<size_t>			initial_map;
 	size_t						size;
+	bool						opt_aff;
+	int							opt_heu;
 };
 
 #endif
