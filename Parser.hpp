@@ -6,7 +6,7 @@
 //   By: mbar <mbar@student.42.fr>                  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2015/01/26 10:16:23 by mbar              #+#    #+#             //
-//   Updated: 2015/03/11 10:29:23 by mbar             ###   ########.fr       //
+//   Updated: 2015/03/11 11:19:33 by mbar             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -36,7 +36,6 @@ private:
 	Parser						&operator=(Parser const &rhs);
 	void						check_line(std::string line, size_t i);
 	std::vector<std::string>	split(std::string line, const char *delimiter);
-	bool						is_number(std::string number);
 	size_t						size;
 	std::vector<size_t>			map;
 };
