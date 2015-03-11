@@ -6,7 +6,7 @@
 //   By: mbar <mbar@student.42.fr>                  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2015/01/26 10:20:09 by mbar              #+#    #+#             //
-//   Updated: 2015/03/11 11:38:18 by mbar             ###   ########.fr       //
+//   Updated: 2015/03/11 17:30:09 by mbar             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -62,7 +62,7 @@ void							Parser::check_line(std::string line, size_t i)
 		return ;
 	if (!this->size && std::regex_match(line, map_value))
 	{
-		if (atoi(line.data()) < 2)
+		if (atoi(line.data()) < 3)
 		{
 			throw CustomError::WrongSize();
 		}

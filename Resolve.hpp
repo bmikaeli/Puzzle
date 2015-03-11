@@ -6,7 +6,7 @@
 //   By: mbar <mbar@student.42.fr>                  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2015/03/09 16:06:45 by mbar              #+#    #+#             //
-//   Updated: 2015/03/11 13:06:43 by mbar             ###   ########.fr       //
+//   Updated: 2015/03/11 17:07:37 by mbar             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -47,6 +47,9 @@ private:
 	typedef size_t (Resolve::*t_heuristic)(size_t, size_t, std::vector<size_t>);
 	t_heuristic					heuristics[3];
 
+	void						generate_final_map(void);
+	size_t						pos_value(size_t n, std::vector<size_t> map);
+
 	size_t						heuristic_p(size_t n, size_t pos, std::vector<size_t> map);
 	size_t						heuristic_w(size_t n, size_t pos, std::vector<size_t> map);
 	size_t						heuristic_e(size_t n, size_t pos, std::vector<size_t> map);
@@ -64,6 +67,7 @@ private:
 	void						aff_nb_max(size_t n);
 
 	std::vector<size_t>			initial_map;
+	std::vector<size_t>			final_map;
 	size_t						size;
 	bool						opt_aff;
 	int							opt_heu;
