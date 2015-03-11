@@ -18,6 +18,7 @@
 # include <map>
 # include <algorithm>
 # include <unistd.h>
+# include "IHeuristic.Class.hpp"
 
 # define MAX	500
 
@@ -35,6 +36,7 @@ class Resolve
 {
 public:
 	Resolve(std::vector<size_t> initial_map, size_t size);
+	void addHeuristic(IHeuristic);
 	virtual ~Resolve(void);
 
 	void						launch(void);
@@ -42,6 +44,7 @@ private:
 	Resolve(Resolve const &src);
 	Resolve						&operator=(Resolve const &rhs);
 
+	std::vector<IHeuristic>     heuristic_table;
 	size_t						heuristic_m(size_t n, size_t pos, std::vector<size_t> map);
 	size_t						sum_heuristic_m(std::vector<size_t> map);
 	bool						is_solvable(void);

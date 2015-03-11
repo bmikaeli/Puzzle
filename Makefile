@@ -14,6 +14,7 @@ NAME = n-puzzle
 
 SRC = main.cpp \
 		Parser.cpp \
+		ManhattanHeuristic.Class.cpp \
 		Resolve.cpp
 
 CFLAGS = -Wall -Wextra -Werror -std=c++11

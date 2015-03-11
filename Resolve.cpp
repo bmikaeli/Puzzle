@@ -242,19 +242,43 @@ void							Resolve::aff_map(std::vector<size_t> map)
 		i++;
 	}
 }
-
+void Resolve::addHeuristic(IHeuristic heuristic) {
+	(void) heuristic;
+	std::cout << this->heuristic_table.size() << std::endl;
+	this->heuristic_table.push_back(heuristic);
+}
 size_t							Resolve::sum_heuristic_m(std::vector<size_t> map)
 {
 	size_t						r = 0;
 	size_t						i = 0;
 
+	if(this->heuristic_table.size() == 0)
+	{
+		std::cout << "There is no heuristic function loaded. Abort." << std::endl;
+		exit(-1);
+	}
+//	std::vector< IHeuristic >::iterator it;
+//	std::vector< IHeuristic >::iterator ite = this->heuristic_table.end();
+
+	std::cout << this->heuristic_table.size() <<std::endl;
 	while (i < map.size() - 1)
 	{
-		r += this->heuristic_m(i + 1, i, map);
+//		for(it = this->heuristic_table.begin(); it != ite; it++)
+//		{
+//			std::cout << "heuristic" << std::endl;
+
+
+		r +=  this->heuristic_table[0]->Calculate(i + 1, i, map, this->size);
+		std::cout << r << std::endl;
+//		std::cout << this->heuristic_table[0] << std::endl;
+		exit(1);
+//			r +=  heuristic_m(i + 1, i, map);
+//		}
 		i++;
 	}
 	return (r);
 }
+
 
 size_t							Resolve::heuristic_m(size_t n, size_t pos, std::vector<size_t> map)
 {
