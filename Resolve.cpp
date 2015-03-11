@@ -6,7 +6,7 @@
 //   By: mbar <mbar@student.42.fr>                  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2015/03/09 16:07:47 by mbar              #+#    #+#             //
-//   Updated: 2015/03/11 10:19:05 by mbar             ###   ########.fr       //
+//   Updated: 2015/03/11 11:41:58 by mbar             ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -196,12 +196,14 @@ void									Resolve::launch(void)
 
 void							Resolve::aff_nb_max(size_t n)
 {
-	std::cout << "Maximum number of states represented: " << n << std::endl;
+//	std::cout << "Maximum number of states represented: " << n << std::endl;
+	printf("%-38s %5ld\n", "Maximum number of states represented:", n);
 }
 
 void							Resolve::aff_nb_opened(size_t n)
 {
-	std::cout << "Number of states selected: " << n << std::endl;
+//	std::cout << "Number of states selected: " << n << std::endl;
+	printf("%-38s %5ld\n", "Number of states selected:", n);
 }
 
 void							Resolve::aff_nb_moves(t_node current, std::map<int, std::vector<t_node> > closed)
@@ -216,7 +218,8 @@ void							Resolve::aff_nb_moves(t_node current, std::map<int, std::vector<t_nod
 		i++;
 	}
 	std::cout << std::endl;
-	std::cout << "Number of moves: " << i << std::endl;
+//	std::cout << "Number of moves: " << i << std::endl;
+	printf("%-38s %5ld\n", "Number of moves:", i);
 }
 
 void							Resolve::aff_sequence(t_node current, std::map<int, std::vector<t_node> > closed)
