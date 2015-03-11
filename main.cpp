@@ -37,7 +37,12 @@ int main(int argc, char **argv) {
     if (argc == 3)
         Resolve.setOpt_aff(false);
 
-    Resolve.launch();
-
+    try {
+        Resolve.launch();
+    }
+    catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        exit(-1);
+    }
     return (0);
 }
