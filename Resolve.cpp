@@ -161,8 +161,7 @@ void									Resolve::launch(void)
 {
 	if (!this->is_solvable())
 	{
-		std::cerr << "This puzzle is unsolvable." << std::endl;
-		return ;
+		throw CustomError::Unsolvable();
 	}
 
 	std::vector<t_node>					opened;

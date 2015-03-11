@@ -20,6 +20,7 @@
 # include <cstdlib>
 # include <regex>
 # include <string>
+# include "CustomError.class.hpp"
 
 # define COMMENT_CHAR	'#'
 

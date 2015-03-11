@@ -44,12 +44,10 @@ void							Parser::check_input(std::string input)
 
 	if (!file)
 	{
-		std::cerr << "File doesn't exist" << std::endl;
-		exit(-1);
+		throw CustomError::UnknownFile();
 	}
 	while (std::getline(file, line))
 		this->check_line(line, i++);
-//	std::cout << this->map.size() << std::endl;
 }
 
 void							Parser::check_line(std::string line, size_t i)
@@ -66,16 +64,14 @@ void							Parser::check_line(std::string line, size_t i)
 	{
 		if (atoi(line.data()) < 2)
 		{
-			std::cerr << "Wrong size" << std::endl;
-			exit(-1);
+			throw CustomError::WrongSize();
 		}
 		this->size = atoi(line.data());
 		return ;
 	}
 	if (!this->size)
 	{
-		std::cerr << "Size not specified" << std::endl;
-		exit(-1);
+		throw CustomError::SizeNotSpecified();
 	}
 	array = this->split(line, " ");
 	for (auto elem : array)
@@ -84,8 +80,7 @@ void							Parser::check_line(std::string line, size_t i)
 		{
 			if (this->map.size() >= (this->size * this->size))
 			{
-				std::cerr << "Too much values" << std::endl;
-				exit(-1);
+				throw CustomError::TooMuchValues();
 			}
 			this->map.push_back(atoi(elem.data()));
 			c++;
@@ -94,14 +89,12 @@ void							Parser::check_line(std::string line, size_t i)
 			break ;
 		else
 		{
-			std::cerr << "Line " << i << ": Syntax Error" << std::endl;
-			exit(-1);
+			throw CustomError::SyntaxError();
 		}
 	}
 	if (c != this->size)
 	{
-		std::cerr << "Line " << i << ": Number of values Error" << std::endl;
-		exit(-1);
+		throw CustomError::NumberOfValuesError();
 	}
 }
 

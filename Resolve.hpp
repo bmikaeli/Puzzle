@@ -18,6 +18,7 @@
 # include <map>
 # include <algorithm>
 # include <cmath>
+# include "CustomError.class.hpp"
 
 # define MAX	500
 

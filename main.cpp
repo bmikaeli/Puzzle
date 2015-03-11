@@ -13,30 +13,31 @@
 #include "Parser.hpp"
 #include "Resolve.hpp"
 
-int						main(int argc, char **argv)
-{
-	Parser				Parser;
+int main(int argc, char **argv) {
+    Parser Parser;
 
-	if (argc != 2 && argc != 3)
-	{
-		std::cout << "usage : " << argv[0] << " [-t] [map]" << std::endl;
-		return (-1);
-	}
-	if (argc == 3 && strcmp(argv[1], "-t"))
-	{
-		std::cout << "usage : " << argv[0] << " [-t] [map]" << std::endl;
-		return (-1);
-	}
+    if (argc != 2 && argc != 3) {
+        std::cout << "usage : " << argv[0] << " [-t] [map]" << std::endl;
+        return (-1);
+    }
+    if (argc == 3 && strcmp(argv[1], "-t")) {
+        std::cout << "usage : " << argv[0] << " [-t] [map]" << std::endl;
+        return (-1);
+    }
 
-	Parser.check_input(argv[argc - 1]);
+    try {
+        Parser.check_input(argv[argc - 1]);
+    }
+    catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        exit(-1);
+    }
 
-	Resolve				Resolve(Parser.getMap(), Parser.getSize());
-//	ManhattanHeuristic  man;
+    Resolve Resolve(Parser.getMap(), Parser.getSize());
+    if (argc == 3)
+        Resolve.setOpt_aff(false);
 
-//	Resolve.addHeuristic(man);
-	if (argc == 3)
-		Resolve.setOpt_aff(false);
-	Resolve.launch();
+    Resolve.launch();
 
-	return (0);
+    return (0);
 }
